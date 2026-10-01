@@ -1,3 +1,5 @@
+"use client";
+
 type MannequinProps = {
   palette: {
     skin: string;
