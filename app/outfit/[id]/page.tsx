@@ -45,6 +45,8 @@ export default function OutfitDetailPage() {
   }
 
   function saveCurrent() {
+    if (!outfit || !visual) return;
+
     saveLook({
       ...outfit,
       items,
