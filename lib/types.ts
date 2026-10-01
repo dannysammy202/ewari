@@ -47,3 +47,14 @@ export type SavedLook = Outfit & {
   savedAt: string;
   sourceId: string;
 };
+
+export type StyleIntent = {
+  occasion: string;
+  mood: string;
+  colours: string[];
+  requiredItems: string[];
+  dressLevel: "Relaxed" | "Balanced" | "Dressy";
+  styleHints: string[];
+  avoid: string[];
+  stylingDirection: string;
+};
