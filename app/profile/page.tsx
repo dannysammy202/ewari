@@ -23,7 +23,7 @@ export default function ProfilePage() {
 
   return (
     <main className="app-page narrow">
-      <AppHeader eyebrow="EWARI profile" title="Your style" />
+      <AppHeader eyebrow="EWARI profile" title="Your style" backHref="/home" />
 
       {!hydrated ? (
         <PageSkeleton rows={2} />
