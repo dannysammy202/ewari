@@ -1,7 +1,6 @@
 "use client";
 
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import type { ReactNode } from "react";
 import { Icon } from "@/components/icon";
 
@@ -20,8 +19,6 @@ export function AppHeader({
   action,
   compact = false,
 }: AppHeaderProps) {
-  const router = useRouter();
-
   const backControl = backHref ? (
     <Link href={backHref} className="back-control" aria-label="Go back">
       <Icon name="arrow-left-2" size={20} />
@@ -29,7 +26,7 @@ export function AppHeader({
   ) : null;
 
   return (
-    <header className={`app-header ${compact ? "compact" : ""}`}>
+    <header className={`app-header ${backHref ? "has-back" : ""} ${compact ? "compact" : ""}`}>
       {backControl}
       <div className="title-block">
         {eyebrow && <p className="eyebrow">{eyebrow}</p>}
@@ -47,7 +44,7 @@ export function AppHeader({
           min-height: 78px;
           margin-bottom: 26px;
         }
-        .app-header:not(:has(.back-control)) {
+        .app-header:not(.has-back) {
           grid-template-columns: minmax(0, 1fr) auto;
         }
         .title-block { min-width: 0; }
