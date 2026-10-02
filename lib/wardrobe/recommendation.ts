@@ -116,8 +116,9 @@ export function buildWardrobeLooks(
     }
 
     const names = unique.slice(0, 3).map((item) => item.name.toLowerCase());
+    const combinationId = unique.map((item) => item.id).sort().join("_");
     looks.push({
-      id: `wardrobe-${intent.occasion.toLowerCase().replace(/\s+/g, "-")}-${index}`,
+      id: `wardrobe-${intent.occasion.toLowerCase().replace(/\s+/g, "-")}-${combinationId}`,
       title: index === 0 ? `${intent.occasion} from your wardrobe` : `${intent.mood} option ${index + 1}`,
       occasion: intent.occasion,
       explanation: names.length
@@ -211,7 +212,7 @@ export function recommendWardrobeGaps(
           name: candidate.name,
           category: candidate.category,
           reason: count === 0
-            ? `You do not have a ${candidate.category} like this yet, and it fits your saved style preferences.`
+            ? `Your wardrobe has no ${candidate.category === "shoes" ? "footwear" : candidate.category} like this yet. It fits your saved style preferences.`
             : `This adds another ${candidate.styles[0].toLowerCase()} option to the pieces you already own.`,
           worksWith,
           priority: score >= 10 ? "High" as const : "Medium" as const,
