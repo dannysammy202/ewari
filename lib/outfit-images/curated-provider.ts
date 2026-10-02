@@ -81,6 +81,14 @@ const CURATED: Record<string, Omit<OutfitImage, "itemId">> = {
     license: "Reference image",
     sourceUrl: "https://brandhouse-eg.com/collections/shoes",
   },
+  "gold-watch": {
+    imageUrl: "https://cdn.shopify.com/s/files/1/0684/3029/9414/products/Wittnauer_with_34X34_MM_Champagne_Diamond_Dial_Stainless_Steel_Watch_Band_WN4113_1.jpg?v=1693479747",
+    fullImageUrl: "https://cdn.shopify.com/s/files/1/0684/3029/9414/products/Wittnauer_with_34X34_MM_Champagne_Diamond_Dial_Stainless_Steel_Watch_Band_WN4113_1.jpg?v=1693479747",
+    title: "Gold-tone watch",
+    creator: "Daniels Jewelers",
+    license: "Reference image",
+    sourceUrl: "https://www.danielsjewelers.com/products/citizen-l-rainell-em1202-50p",
+  },
   "sand-overshirt": {
     imageUrl: "https://dstoreegypt.com/cdn/shop/files/e6daff265fbf429bb14393e1d983770f-shpbl00963-sandro-beige-jacket-0.jpg?v=1779320747",
     fullImageUrl: "https://dstoreegypt.com/cdn/shop/files/e6daff265fbf429bb14393e1d983770f-shpbl00963-sandro-beige-jacket-0.jpg?v=1779320747",
