@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { BottomNav } from "@/components/bottom-nav";
-import { Mannequin } from "@/components/mannequin";
+import { OutfitBoard } from "@/components/outfit-board";
 import { Icon } from "@/components/icon";
 import { formatNaira } from "@/lib/data";
 import { getSavedLooks, removeSavedLook } from "@/lib/store";
@@ -32,7 +32,9 @@ export default function SavedPage() {
         <div className="saved-grid">
           {looks.map((look) => (
             <article key={look.sourceId} className="saved-card">
-              <Link href={`/outfit/${look.sourceId}`} className="saved-visual"><Mannequin palette={look.visual} /></Link>
+              <Link href={`/outfit/${look.sourceId}`} className="saved-visual">
+                <OutfitBoard items={look.items} compact showLabels={false} />
+              </Link>
               <div className="saved-copy">
                 <div>
                   <p>{look.occasion}</p>
@@ -56,7 +58,7 @@ export default function SavedPage() {
         .saved-card { min-width: 0; }
         .saved-visual {
           display: block;
-          height: 260px;
+          height: 330px;
           overflow: hidden;
           border-radius: 20px;
           background: #ede5da;
@@ -67,7 +69,7 @@ export default function SavedPage() {
         .saved-copy h3 { margin: 0; font-size: 15px; }
         .saved-copy span { display: block; margin-top: 5px; color: #766d67; font-size: 11px; }
         .saved-copy button { flex: 0 0 38px; width: 38px; height: 38px; display: grid; place-items: center; border: 1px solid rgba(42,33,29,.12); border-radius: 50%; background: transparent; }
-        @media (min-width: 720px) { .saved-grid { grid-template-columns: repeat(3, 1fr); gap: 18px; } .saved-visual { height: 320px; } }
+        @media (min-width: 720px) { .saved-grid { grid-template-columns: repeat(3, 1fr); gap: 18px; } .saved-visual { height: 380px; } }
         @media (min-width: 980px) { .saved-grid { grid-template-columns: repeat(4, 1fr); } }
       `}</style>
     </main>

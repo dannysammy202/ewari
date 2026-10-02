@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import type { Outfit } from "@/lib/types";
-import { Mannequin } from "@/components/mannequin";
+import { OutfitBoard } from "@/components/outfit-board";
 import { Icon } from "@/components/icon";
 import { formatNaira } from "@/lib/data";
 import { isSaved, removeSavedLook, saveLook } from "@/lib/store";
@@ -32,7 +32,7 @@ export function OutfitCard({ outfit }: { outfit: Outfit }) {
     <article className="outfit-card">
       <div className="visual">
         <Link href={`/outfit/${outfit.id}`} aria-label={`Open ${outfit.title}`}>
-          <Mannequin palette={outfit.visual} />
+          <OutfitBoard items={outfit.items} compact showLabels={false} />
         </Link>
         <button className={`save ${saved ? "saved" : ""}`} onClick={toggleSave} aria-label="Save look">
           <Icon name={saved ? "bookmark-2" : "bookmark"} active={saved} size={19} />
@@ -47,7 +47,7 @@ export function OutfitCard({ outfit }: { outfit: Outfit }) {
         .outfit-card { min-width: 0; }
         .visual {
           position: relative;
-          height: 250px;
+          height: 330px;
           overflow: hidden;
           border-radius: 20px;
           background: #ede5da;
@@ -64,9 +64,10 @@ export function OutfitCard({ outfit }: { outfit: Outfit }) {
           place-items: center;
           border: 0;
           border-radius: 50%;
-          background: rgba(255,253,249,.88);
+          background: rgba(255,253,249,.9);
           color: #171412;
           backdrop-filter: blur(8px);
+          z-index: 4;
         }
         .save.saved { background: #2a211d; color: #c7f24a; }
         .copy { display: block; padding: 11px 2px 4px; }
@@ -81,7 +82,7 @@ export function OutfitCard({ outfit }: { outfit: Outfit }) {
         h3 { margin: 0; font-size: 16px; letter-spacing: -.025em; }
         .price { margin: 5px 0 0; color: #766d67; font-size: 12px; }
         @media (min-width: 720px) {
-          .visual { height: 300px; }
+          .visual { height: 380px; }
         }
       `}</style>
     </article>

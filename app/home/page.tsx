@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import { BottomNav } from "@/components/bottom-nav";
 import { Icon } from "@/components/icon";
-import { Mannequin } from "@/components/mannequin";
+import { OutfitBoard } from "@/components/outfit-board";
 import { OutfitCard } from "@/components/outfit-card";
 import { OCCASIONS, formatNaira, recommendOutfits } from "@/lib/data";
 import { getProfile } from "@/lib/store";
@@ -39,7 +39,7 @@ export default function HomePage() {
           <p className="hero-budget">{formatNaira(featured.budgetMin)}–{formatNaira(featured.budgetMax)}</p>
           <Link href={`/outfit/${featured.id}`} className="secondary-button">View look</Link>
         </div>
-        <div className="hero-visual"><Mannequin palette={featured.visual} /></div>
+        <div className="hero-visual"><OutfitBoard items={featured.items} compact showLabels={false} /></div>
       </section>
 
       <section className="section">
@@ -78,7 +78,7 @@ export default function HomePage() {
         .greeting { margin: 4px 0 0; color: #766d67; font-size: 12px; }
         .hero-card {
           position: relative;
-          min-height: 440px;
+          min-height: 560px;
           display: grid;
           grid-template-rows: auto 1fr;
           overflow: hidden;
@@ -108,7 +108,12 @@ export default function HomePage() {
           place-items: center;
           min-width: 125px;
         }
-        .hero-visual { min-height: 280px; margin-top: -30px; }
+        .hero-visual {
+          min-height: 350px;
+          margin: 20px 16px 16px;
+          overflow: hidden;
+          border-radius: 22px;
+        }
         .occasion-row {
           display: grid;
           grid-auto-flow: column;
@@ -135,9 +140,9 @@ export default function HomePage() {
         .number { font-size: 11px; color: #766d67; font-weight: 750; }
         .occasion-card strong { font-size: 15px; }
         @media (min-width: 760px) {
-          .hero-card { grid-template-columns: 1fr 1fr; min-height: 500px; }
+          .hero-card { grid-template-columns: .85fr 1.15fr; min-height: 560px; }
           .hero-copy { padding: 38px; align-self: center; }
-          .hero-visual { min-height: 500px; margin-top: 0; }
+          .hero-visual { min-height: 528px; margin: 16px; }
         }
       `}</style>
     </main>

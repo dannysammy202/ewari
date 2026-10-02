@@ -1,16 +1,11 @@
 "use client";
 
 import Link from "next/link";
-import { Mannequin } from "@/components/mannequin";
+import { OutfitBoard } from "@/components/outfit-board";
+import { OUTFITS } from "@/lib/data";
 
 export default function LandingPage() {
-  const preview = {
-    skin: "#6E4936",
-    top: "#2A211D",
-    bottom: "#B96A4B",
-    shoes: "#F5F3EE",
-    accent: "#C7F24A"
-  };
+  const preview = OUTFITS.find((outfit) => outfit.id === "lagos-layer") || OUTFITS[0];
 
   return (
     <main className="landing">
@@ -28,12 +23,10 @@ export default function LandingPage() {
         <p className="footnote">No shopping cart. No marketplace. Find the look, then source the pieces your way.</p>
       </section>
       <section className="landing-visual" aria-label="EWARI outfit preview">
-        <div className="visual-tag">Lagos Layer</div>
-        <Mannequin palette={preview} />
+        <div className="visual-tag">{preview.title}</div>
+        <OutfitBoard items={preview.items} showLabels />
         <div className="visual-meta">
-          <span>Streetwear</span>
-          <span>Afrocentric</span>
-          <span>Relaxed</span>
+          {preview.style.slice(0, 3).map((style) => <span key={style}>{style}</span>)}
         </div>
       </section>
       <style jsx>{`
@@ -68,10 +61,7 @@ export default function LandingPage() {
           margin-top: 30px;
           max-width: 440px;
         }
-        .actions :global(a) {
-          display: grid;
-          place-items: center;
-        }
+        .actions :global(a) { display: grid; place-items: center; }
         .footnote {
           max-width: 490px;
           margin: 18px 0 0;
@@ -81,7 +71,7 @@ export default function LandingPage() {
         }
         .landing-visual {
           position: relative;
-          height: 510px;
+          height: 670px;
           overflow: hidden;
           border-radius: 30px;
           background: #ede5da;
@@ -92,7 +82,7 @@ export default function LandingPage() {
           position: absolute;
           top: 20px;
           left: 20px;
-          z-index: 2;
+          z-index: 5;
           padding: 9px 13px;
           border-radius: 999px;
           background: #2a211d;
@@ -105,6 +95,7 @@ export default function LandingPage() {
           left: 18px;
           right: 18px;
           bottom: 18px;
+          z-index: 5;
           display: flex;
           flex-wrap: wrap;
           gap: 7px;
@@ -112,19 +103,16 @@ export default function LandingPage() {
         .visual-meta span {
           padding: 8px 11px;
           border-radius: 999px;
-          background: rgba(255,253,249,.86);
+          background: rgba(255,253,249,.9);
           font-size: 11px;
           font-weight: 750;
           backdrop-filter: blur(8px);
         }
         @media (min-width: 840px) {
-          .landing {
-            grid-template-columns: 1.05fr .75fr;
-            padding: 40px 42px;
-          }
+          .landing { grid-template-columns: 1.05fr .75fr; padding: 40px 42px; }
           .brand { margin-bottom: 82px; }
           .actions { grid-template-columns: 1fr 1fr; }
-          .landing-visual { height: min(76vh, 700px); }
+          .landing-visual { height: min(82vh, 760px); }
         }
       `}</style>
     </main>

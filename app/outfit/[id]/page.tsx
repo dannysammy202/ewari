@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useMemo, useState } from "react";
 import { useParams } from "next/navigation";
 import { Icon } from "@/components/icon";
-import { Mannequin } from "@/components/mannequin";
+import { OutfitBoard } from "@/components/outfit-board";
 import { SWAPS, formatNaira, getOutfit } from "@/lib/data";
 import { saveLook } from "@/lib/store";
 import type { OutfitItem } from "@/lib/types";
@@ -66,7 +66,7 @@ export default function OutfitDetailPage() {
           <Link href="/home" className="round" aria-label="Go back"><Icon name="arrow-left-2" size={21} /></Link>
           <button className={`round ${saved ? "saved" : ""}`} onClick={saveCurrent} aria-label="Save look"><Icon name="bookmark" active={saved} size={21} /></button>
         </div>
-        <Mannequin palette={visual} />
+        <OutfitBoard items={items} showLabels />
       </section>
 
       <section className="detail-copy">
@@ -126,7 +126,7 @@ export default function OutfitDetailPage() {
 
       <style jsx>{`
         .detail-page { width: min(100%, 1100px); margin: 0 auto; min-height: 100vh; }
-        .detail-visual { position: relative; height: 56vh; min-height: 430px; background: #ede5da; }
+        .detail-visual { position: relative; min-height: 690px; background: #ede5da; overflow: hidden; }
         .detail-actions { position: absolute; top: 18px; left: 18px; right: 18px; z-index: 5; display: flex; justify-content: space-between; }
         .round { width: 44px; height: 44px; display: grid; place-items: center; border: 1px solid rgba(42,33,29,.1); border-radius: 50%; background: rgba(255,253,249,.9); color: #171412; }
         button.round { padding: 0; }
@@ -158,7 +158,7 @@ export default function OutfitDetailPage() {
         .swap-option small { margin-top: 4px; color: #766d67; }
         @media (min-width: 800px) {
           .detail-page { display: grid; grid-template-columns: 1fr 1fr; align-items: start; padding: 26px; gap: 30px; }
-          .detail-visual { position: sticky; top: 26px; height: calc(100vh - 52px); border-radius: 28px; overflow: hidden; }
+          .detail-visual { position: sticky; top: 26px; height: calc(100vh - 52px); min-height: 690px; border-radius: 28px; overflow: hidden; }
           .detail-copy { padding: 32px 10px 70px; }
         }
       `}</style>
