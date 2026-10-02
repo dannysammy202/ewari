@@ -157,7 +157,7 @@ export default function WardrobePage() {
       <AppHeader
         eyebrow="Clothes you already own"
         title="Wardrobe"
-        backHref={setupMode ? "/onboarding" : undefined}
+        backHref={setupMode ? "/onboarding" : "/home"}
         action={action}
       />
 
@@ -203,7 +203,6 @@ export default function WardrobePage() {
           {items.length > 0 && !analysis && !analysing && (
             <div className="collection-note">
               <span>{items.length} {items.length === 1 ? "item" : "items"} saved on this device</span>
-              <button onClick={() => inputRef.current?.click()}>Add another</button>
             </div>
           )}
 
@@ -355,25 +354,15 @@ export default function WardrobePage() {
         }
         .intro-card :global(.primary-button) { width: 100%; }
         .collection-note {
-          min-height: 50px;
+          min-height: 46px;
           display: flex;
           align-items: center;
-          justify-content: space-between;
-          gap: 12px;
           padding: 0 14px;
           border: 1px solid rgba(42,33,29,.1);
           border-radius: 15px;
           background: #fffdf9;
           color: #766d67;
           font-size: 11px;
-        }
-        .collection-note button {
-          border: 0;
-          background: transparent;
-          color: #171412;
-          font-weight: 800;
-          text-decoration: underline;
-          text-underline-offset: 3px;
         }
         .message {
           margin: 14px 0 0;
