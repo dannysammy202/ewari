@@ -18,14 +18,15 @@ export default function OutfitDetailPage() {
     return <main className="app-page narrow"><div className="empty-state">This look is unavailable.</div></main>;
   }
 
+  const currentOutfit = outfit;
   const alternatives = OUTFITS.filter(
-    (candidate) => candidate.id !== outfit.id && candidate.occasion === outfit.occasion
+    (candidate) => candidate.id !== currentOutfit.id && candidate.occasion === currentOutfit.occasion
   );
 
   function saveCurrent() {
     saveLook({
-      ...outfit,
-      sourceId: outfit.id,
+      ...currentOutfit,
+      sourceId: currentOutfit.id,
       savedAt: new Date().toISOString()
     });
     setSaved(true);
