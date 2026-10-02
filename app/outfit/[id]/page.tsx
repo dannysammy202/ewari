@@ -5,7 +5,8 @@ import { useMemo, useState } from "react";
 import { useParams } from "next/navigation";
 import { Icon } from "@/components/icon";
 import { OutfitBoard } from "@/components/outfit-board";
-import { SWAPS, getOutfit } from "@/lib/data";\nimport { formatNaira } from "@/lib/currency";
+import { SWAPS, getOutfit } from "@/lib/data";
+import { formatNaira } from "@/lib/currency";
 import { saveLook } from "@/lib/store";
 import type { OutfitItem } from "@/lib/types";
 

@@ -6,7 +6,9 @@ import { BottomNav } from "@/components/bottom-nav";
 import { Icon } from "@/components/icon";
 import { OutfitBoard } from "@/components/outfit-board";
 import { OutfitCard } from "@/components/outfit-card";
-import { OCCASIONS } from "@/lib/data";\nimport { formatNaira } from "@/lib/currency";\nimport { recommendOutfits } from "@/lib/recommendation/profile-ranking";
+import { OCCASIONS } from "@/lib/data";
+import { formatNaira } from "@/lib/currency";
+import { recommendOutfits } from "@/lib/recommendation/profile-ranking";
 import { getProfile } from "@/lib/store";
 import type { StyleProfile } from "@/lib/types";
 
