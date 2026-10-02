@@ -1,8 +1,12 @@
+import { getCuratedOutfitImage } from "@/lib/outfit-images/curated-provider";
 import { searchOpenverseImage } from "@/lib/outfit-images/openverse-provider";
 import { searchWikimediaImage } from "@/lib/outfit-images/wikimedia-provider";
 import type { OutfitImage, OutfitImageSearchItem } from "@/lib/outfit-images/types";
 
 async function findImage(item: OutfitImageSearchItem) {
+  const curated = getCuratedOutfitImage(item);
+  if (curated) return curated;
+
   const openverse = await searchOpenverseImage(item);
   if (openverse) return openverse;
 
