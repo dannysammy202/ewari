@@ -1,13 +1,19 @@
 "use client";
 
+import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import { BottomNav } from "@/components/bottom-nav";
-import { OutfitCard } from "@/components/outfit-card";
+import { WardrobeGapList } from "@/components/wardrobe-gap-list";
+import { WardrobeLookCard } from "@/components/wardrobe-look-card";
 import { OCCASIONS } from "@/lib/data";
 import { fallbackStyleIntent } from "@/lib/recommendation/fallback-style-intent";
-import { rankOutfitsForIntent } from "@/lib/recommendation/outfit-ranking";
-import { getProfile } from "@/lib/store";
+import { getProfile, getWardrobeItems } from "@/lib/store";
+import {
+  buildWardrobeLooks,
+  recommendWardrobeGaps,
+} from "@/lib/wardrobe/recommendation";
 import type { StyleIntent, StyleProfile } from "@/lib/types";
+import type { WardrobeItem } from "@/lib/wardrobe/types";
 
 const moods = ["Clean", "Relaxed", "Bold", "Minimal", "Smart", "Street", "Afrocentric"];
 
@@ -16,17 +22,34 @@ export default function StyleMePage() {
   const [mood, setMood] = useState("Relaxed");
   const [prompt, setPrompt] = useState("");
   const [profile, setProfile] = useState<StyleProfile | null>(null);
+  const [wardrobe, setWardrobe] = useState<WardrobeItem[]>([]);
   const [intent, setIntent] = useState<StyleIntent | null>(null);
   const [generated, setGenerated] = useState(false);
   const [loading, setLoading] = useState(false);
   const [source, setSource] = useState<"gemini" | "fallback" | null>(null);
 
-  useEffect(() => setProfile(getProfile()), []);
+  useEffect(() => {
+    setProfile(getProfile());
+    setWardrobe(getWardrobeItems());
 
-  const results = useMemo(() => {
-    const activeIntent = intent || fallbackStyleIntent(occasion, mood, prompt);
-    return rankOutfitsForIntent(activeIntent, profile).slice(0, 3);
-  }, [intent, occasion, mood, prompt, profile]);
+    const requested = new URLSearchParams(window.location.search).get("occasion");
+    if (requested && OCCASIONS.includes(requested)) setOccasion(requested);
+  }, []);
+
+  const activeIntent = useMemo(
+    () => intent || fallbackStyleIntent(occasion, mood, prompt),
+    [intent, occasion, mood, prompt]
+  );
+
+  const wardrobeLooks = useMemo(
+    () => buildWardrobeLooks(wardrobe, activeIntent, profile).filter((look) => look.completeness === 100),
+    [wardrobe, activeIntent, profile]
+  );
+
+  const gaps = useMemo(
+    () => recommendWardrobeGaps(wardrobe, profile, activeIntent, 4),
+    [wardrobe, profile, activeIntent]
+  );
 
   async function generateLooks() {
     const fallback = fallbackStyleIntent(occasion, mood, prompt);
@@ -45,7 +68,6 @@ export default function StyleMePage() {
       if (!response.ok) throw new Error("Gemini unavailable");
 
       const data = await response.json();
-
       if (!data?.intent) throw new Error("Missing intent");
 
       setIntent(data.intent);
@@ -54,6 +76,7 @@ export default function StyleMePage() {
       setIntent(fallback);
       setSource("fallback");
     } finally {
+      setWardrobe(getWardrobeItems());
       setGenerated(true);
       setLoading(false);
     }
@@ -73,10 +96,21 @@ export default function StyleMePage() {
     <main className="app-page narrow">
       <header className="topbar">
         <div>
-          <p className="eyebrow">Your personal stylist</p>
+          <p className="eyebrow">Style what you already own</p>
           <h1 className="display">Style me</h1>
         </div>
       </header>
+
+      {!wardrobe.length && (
+        <section className="wardrobe-callout">
+          <div>
+            <p className="eyebrow">Your wardrobe is empty</p>
+            <h3>Add your clothes first</h3>
+            <p>EWARI needs your own pieces before it builds a personal outfit.</p>
+          </div>
+          <Link href="/wardrobe" className="primary-button">Add clothes</Link>
+        </section>
+      )}
 
       <section className="styler card">
         <div className="field-block">
@@ -110,19 +144,19 @@ export default function StyleMePage() {
         </div>
 
         <div className="field-block">
-          <label htmlFor="prompt">Tell EWARI what you need</label>
+          <label htmlFor="prompt">Anything specific?</label>
           <textarea
             id="prompt"
             className="prompt"
             value={prompt}
             onChange={(event) => setPrompt(event.target.value)}
-            placeholder="For example: something relaxed for church, mostly black, with white sneakers."
+            placeholder="For example: keep it mostly black, use my white sneakers, relaxed fit."
           />
-          <p className="helper">Mention a colour, a piece you want included, or how dressed up you want to feel.</p>
+          <p className="helper">EWARI checks your uploaded wardrobe first.</p>
         </div>
 
-        <button className="primary-button generate" onClick={generateLooks} disabled={loading}>
-          {loading ? "Styling your looks…" : "Give me looks"}
+        <button className="primary-button generate" onClick={generateLooks} disabled={loading || !wardrobe.length}>
+          {loading ? "Checking your wardrobe…" : "Style my wardrobe"}
         </button>
       </section>
 
@@ -140,29 +174,56 @@ export default function StyleMePage() {
           <div className="intent-chips">
             {summary.map((value, index) => <span key={`${value}-${index}`}>{value}</span>)}
           </div>
-          {source === "fallback" && (
-            <p className="fallback-note">Gemini was unavailable, so EWARI used its built-in recommendation engine.</p>
-          )}
         </section>
       )}
 
       {generated && (
-        <section className="section">
-          <div className="section-head">
-            <div>
-              <p className="eyebrow">Built around your request</p>
-              <h3>Here are three directions</h3>
+        <>
+          <section className="section">
+            <div className="section-head">
+              <div>
+                <p className="eyebrow">Using clothes you own</p>
+                <h3>{wardrobeLooks.length ? "Your outfit options" : "No complete look yet"}</h3>
+              </div>
             </div>
-          </div>
-          <div className="results">
-            {results.map((outfit) => <OutfitCard key={outfit.id} outfit={outfit} />)}
-          </div>
-        </section>
+
+            {wardrobeLooks.length ? (
+              <div className="results">
+                {wardrobeLooks.map((look) => <WardrobeLookCard key={look.id} look={look} />)}
+              </div>
+            ) : (
+              <div className="empty-state compact-empty">
+                EWARI could not build a complete look from your current wardrobe for this request. The gaps below are the pieces with the highest value for your wardrobe.
+              </div>
+            )}
+          </section>
+
+          <section className="section">
+            <div className="section-head">
+              <div>
+                <p className="eyebrow">Wardrobe gaps</p>
+                <h3>Worth adding</h3>
+              </div>
+            </div>
+            <WardrobeGapList recommendations={gaps} />
+          </section>
+        </>
       )}
 
       <BottomNav />
 
       <style jsx>{`
+        .wardrobe-callout {
+          display: grid;
+          gap: 16px;
+          margin-bottom: 18px;
+          padding: 18px;
+          border-radius: 20px;
+          background: #dfe7c5;
+        }
+        .wardrobe-callout h3 { margin: 0; font-size: 20px; }
+        .wardrobe-callout p:last-child { margin: 6px 0 0; color: #5d6250; font-size: 12px; line-height: 1.45; }
+        .wardrobe-callout :global(a) { display: grid; place-items: center; }
         .styler { padding: 18px; }
         .field-block + .field-block { margin-top: 26px; }
         label { display: block; margin-bottom: 11px; font-size: 14px; font-weight: 800; }
@@ -180,7 +241,7 @@ export default function StyleMePage() {
         .prompt:focus { border-color: #2a211d; box-shadow: 0 0 0 3px rgba(199,242,74,.28); }
         .helper { margin: 8px 0 0; color: #766d67; font-size: 11px; line-height: 1.45; }
         .generate { width: 100%; margin-top: 22px; }
-        .generate:disabled { opacity: .62; cursor: progress; }
+        .generate:disabled { opacity: .42; cursor: not-allowed; }
         .interpretation {
           margin-top: 18px;
           padding: 18px;
@@ -215,12 +276,13 @@ export default function StyleMePage() {
           font-size: 11px;
           font-weight: 750;
         }
-        .fallback-note { margin: 12px 0 0; color: #766d67; font-size: 11px; line-height: 1.45; }
-        .results { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
+        .results { display: grid; grid-template-columns: 1fr; gap: 14px; }
+        .compact-empty { padding: 30px 18px; font-size: 12px; line-height: 1.5; }
         @media (min-width: 680px) {
-          .results { grid-template-columns: repeat(3, 1fr); }
+          .wardrobe-callout { grid-template-columns: 1fr auto; align-items: center; }
           .styler { padding: 26px; }
           .interpretation { padding: 22px; }
+          .results { grid-template-columns: repeat(2, minmax(0,1fr)); }
         }
       `}</style>
     </main>

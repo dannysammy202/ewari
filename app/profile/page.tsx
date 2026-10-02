@@ -4,16 +4,16 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { BottomNav } from "@/components/bottom-nav";
 import { Icon } from "@/components/icon";
-import { getProfile, getSavedLooks } from "@/lib/store";
+import { getProfile, getSavedLooks, getWardrobeItems } from "@/lib/store";
 import type { StyleProfile } from "@/lib/types";
 
 export default function ProfilePage() {
   const [profile, setProfile] = useState<StyleProfile | null>(null);
-  const [savedCount, setSavedCount] = useState(0);
+  const [savedCount, setSavedCount] = useState(0);\n  const [wardrobeCount, setWardrobeCount] = useState(0);
 
   useEffect(() => {
     setProfile(getProfile());
-    setSavedCount(getSavedLooks().length);
+    setSavedCount(getSavedLooks().length);\n    setWardrobeCount(getWardrobeItems().length);
   }, []);
 
   return (
@@ -29,7 +29,7 @@ export default function ProfilePage() {
       <section className="stats card">
         <div><strong>{profile?.styles.length || 0}</strong><span>Style directions</span></div>
         <div><strong>{profile?.occasions.length || 0}</strong><span>Occasions</span></div>
-        <div><strong>{savedCount}</strong><span>Saved looks</span></div>
+        <div><strong>{wardrobeCount}</strong><span>Wardrobe items</span></div>
       </section>
 
       <section className="section">
@@ -50,7 +50,7 @@ export default function ProfilePage() {
         )}
       </section>
 
-      <section className="section settings card">
+      <section className="section wardrobe-link card"><Link href="/wardrobe"><Icon name="bag-2" size={20} /><span>Manage wardrobe</span><Icon name="arrow-right-3" size={18} /></Link></section>\n\n      <section className="section settings card">
         <button><Icon name="notification" size={20} /><span>Notifications</span><Icon name="arrow-right-3" size={18} /></button>
         <button><Icon name="moon" size={20} /><span>Appearance</span><Icon name="arrow-right-3" size={18} /></button>
         <button><Icon name="shield-tick" size={20} /><span>Privacy</span><Icon name="arrow-right-3" size={18} /></button>
@@ -67,7 +67,7 @@ export default function ProfilePage() {
         .stats strong { display: block; font-size: 23px; }
         .stats span { display: block; margin-top: 4px; color: #766d67; font-size: 10px; line-height: 1.3; }
         .profile-card { overflow: hidden; }
-        .settings { overflow: hidden; }
+        .wardrobe-link { overflow: hidden; }\n        .wardrobe-link :global(a) { min-height: 58px; display: grid; grid-template-columns: 28px 1fr 22px; align-items: center; gap: 8px; padding: 0 15px; }\n        .settings { overflow: hidden; }
         .settings button { width: 100%; min-height: 58px; display: grid; grid-template-columns: 28px 1fr 22px; align-items: center; gap: 8px; padding: 0 15px; border: 0; border-bottom: 1px solid rgba(42,33,29,.1); background: transparent; text-align: left; }
         .settings button:last-child { border-bottom: 0; }
       `}</style>
