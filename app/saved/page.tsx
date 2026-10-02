@@ -57,7 +57,7 @@ export default function SavedPage() {
 
   return (
     <main className="app-page">
-      <AppHeader eyebrow="Outfits you want to keep" title="Saved" />
+      <AppHeader eyebrow="Outfits you want to keep" title="Saved" backHref="/home" />
 
       {!hydrated ? (
         <PageSkeleton rows={3} />
