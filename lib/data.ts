@@ -1,4 +1,4 @@
-import type { Outfit, OutfitItem, StyleProfile } from "@/lib/types";
+import type { Outfit, OutfitItem } from "@/lib/types";
 
 export const STYLE_OPTIONS = [
   "Streetwear", "Minimal", "Smart casual", "Afrocentric", "Relaxed",
@@ -266,33 +266,6 @@ export const SWAPS: Record<OutfitItem["category"], OutfitItem[]> = {
   ]
 };
 
-function budgetCeiling(label: string) {
-  if (label.startsWith("Under")) return 20000;
-  if (label.includes("20,000 to ₦50,000")) return 50000;
-  if (label.includes("50,000 to ₦100,000")) return 100000;
-  if (label.includes("100,000 to ₦200,000")) return 200000;
-  return 999999;
-}
-
-export function recommendOutfits(profile?: Partial<StyleProfile>, source: Outfit[] = OUTFITS) {
-  if (!profile) return source;
-
-  return [...source].sort((a, b) => {
-    const score = (outfit: Outfit) => {
-      let value = 0;
-      value += outfit.style.filter((style) => profile.styles?.includes(style)).length * 5;
-      if (profile.occasions?.includes(outfit.occasion)) value += 4;
-      if (profile.budget && outfit.budgetMin <= budgetCeiling(profile.budget)) value += 2;
-      return value;
-    };
-    return score(b) - score(a);
-  });
-}
-
 export function getOutfit(id: string) {
   return OUTFITS.find((outfit) => outfit.id === id);
-}
-
-export function formatNaira(value: number) {
-  return `₦${new Intl.NumberFormat("en-NG").format(value)}`;
 }
