@@ -5,7 +5,7 @@ import { useEffect, useState } from "react";
 import type { Outfit } from "@/lib/types";
 import { OutfitBoard } from "@/components/outfit-board";
 import { Icon } from "@/components/icon";
-import { formatNaira } from "@/lib/data";
+import { formatNaira } from "@/lib/currency";
 import { isSaved, removeSavedLook, saveLook } from "@/lib/store";
 
 export function OutfitCard({ outfit }: { outfit: Outfit }) {

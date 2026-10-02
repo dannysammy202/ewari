@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { BottomNav } from "@/components/bottom-nav";
 import { OutfitBoard } from "@/components/outfit-board";
 import { Icon } from "@/components/icon";
-import { formatNaira } from "@/lib/data";
+import { formatNaira } from "@/lib/currency";
 import { getSavedLooks, removeSavedLook } from "@/lib/store";
 import type { SavedLook } from "@/lib/types";
 import Link from "next/link";
