@@ -56,3 +56,14 @@ export type WardrobeContext = {
   profile?: StyleProfile | null;
   items: WardrobeItem[];
 };
+
+
+export type SavedWardrobeLook = {
+  id: string;
+  title: string;
+  occasion: string;
+  explanation: string;
+  completeness: number;
+  itemIds: string[];
+  savedAt: string;
+};

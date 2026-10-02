@@ -14,3 +14,10 @@ export {
   updateWardrobeItem,
   wardrobeItemCount,
 } from "@/lib/repositories/wardrobe-repository";
+
+export {
+  getSavedWardrobeLooks,
+  isWardrobeLookSaved,
+  removeSavedWardrobeLook,
+  saveWardrobeLook,
+} from "@/lib/repositories/saved-wardrobe-look-repository";
