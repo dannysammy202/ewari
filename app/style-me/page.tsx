@@ -61,7 +61,6 @@ export default function StyleMePage() {
     const fallback = fallbackStyleIntent(occasion, mood, prompt);
 
     setLoading(true);
-    setGenerated(false);
     setSource(null);
 
     try {
@@ -100,7 +99,7 @@ export default function StyleMePage() {
 
   return (
     <main className="app-page narrow">
-      <AppHeader eyebrow="Style what you already own" title="Style me" />
+      <AppHeader eyebrow="Style what you already own" title="Style me" backHref="/home" />
 
       {!hydrated ? (
         <PageSkeleton rows={2} />
