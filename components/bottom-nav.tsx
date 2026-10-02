@@ -7,7 +7,7 @@ import { Icon } from "@/components/icon";
 const items = [
   { href: "/home", label: "Home", icon: "home-2" },
   { href: "/wardrobe", label: "Wardrobe", icon: "bag-2" },
-  { href: "/style-me", label: "Style Me", icon: "magic-star", featured: true },
+  { href: "/style-me", label: "Style Me", icon: "magic-star" },
   { href: "/saved", label: "Saved", icon: "bookmark" },
   { href: "/profile", label: "Profile", icon: "profile-circle" }
 ];
@@ -23,9 +23,10 @@ export function BottomNav() {
           <Link
             key={item.href}
             href={item.href}
-            className={`nav-item ${active ? "active" : ""} ${item.featured ? "style-me" : ""}`}
+            aria-current={active ? "page" : undefined}
+            className={`nav-item ${active ? "active" : ""}`}
           >
-            <Icon name={item.icon} active={active} size={21} />
+            <Icon name={item.icon} active={active} size={20} />
             <span>{item.label}</span>
           </Link>
         );
