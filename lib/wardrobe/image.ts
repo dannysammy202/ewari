@@ -14,8 +14,8 @@ export async function prepareWardrobeImage(file: File): Promise<PreparedWardrobe
   const source = await fileToDataUrl(file);
   const image = await loadImage(source);
 
-  const maxWidth = 640;
-  const maxHeight = 760;
+  const maxWidth = 520;
+  const maxHeight = 650;
   const scale = Math.min(1, maxWidth / image.width, maxHeight / image.height);
   const width = Math.max(1, Math.round(image.width * scale));
   const height = Math.max(1, Math.round(image.height * scale));
@@ -31,7 +31,7 @@ export async function prepareWardrobeImage(file: File): Promise<PreparedWardrobe
   context.fillRect(0, 0, width, height);
   context.drawImage(image, 0, 0, width, height);
 
-  const dataUrl = canvas.toDataURL("image/jpeg", 0.68);
+  const dataUrl = canvas.toDataURL("image/jpeg", 0.6);
   const [, base64 = ""] = dataUrl.split(",");
 
   return {
