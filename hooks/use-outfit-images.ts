@@ -12,6 +12,7 @@ export function useOutfitImages(items: OutfitItem[]) {
 
   const [images, setImages] = useState<Record<string, OutfitImage>>({});
   const [broken, setBroken] = useState<Record<string, boolean>>({});
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     let cancelled = false;
@@ -19,8 +20,11 @@ export function useOutfitImages(items: OutfitItem[]) {
     async function load() {
       if (!items.length) {
         setImages({});
+        setLoading(false);
         return;
       }
+
+      setLoading(true);
 
       try {
         const response = await fetch("/api/outfit-images", {
@@ -36,7 +40,7 @@ export function useOutfitImages(items: OutfitItem[]) {
           }),
         });
 
-        if (!response.ok) return;
+        if (!response.ok) throw new Error("Image search failed");
 
         const data = await response.json();
 
@@ -46,6 +50,8 @@ export function useOutfitImages(items: OutfitItem[]) {
         }
       } catch {
         if (!cancelled) setImages({});
+      } finally {
+        if (!cancelled) setLoading(false);
       }
     }
 
@@ -64,5 +70,5 @@ export function useOutfitImages(items: OutfitItem[]) {
     return broken[itemId] ? undefined : images[itemId];
   }
 
-  return { getImage, markBroken };
+  return { getImage, markBroken, loading };
 }

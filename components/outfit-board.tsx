@@ -30,7 +30,7 @@ export function OutfitBoard({ items, compact = false, showLabels = true }: Outfi
     [top, bottom, shoes, accessories]
   );
 
-  const { getImage, markBroken } = useOutfitImages(visibleItems);
+  const { getImage, markBroken, loading } = useOutfitImages(visibleItems);
   const credits = visibleItems
     .map((item) => getImage(item.id))
     .filter((image): image is OutfitImage => Boolean(image));
@@ -42,27 +42,27 @@ export function OutfitBoard({ items, compact = false, showLabels = true }: Outfi
       {top && (
         <div className="piece top-piece">
           {showLabels && <div className="piece-label top-label"><b>TOP</b><span>{top.name}</span></div>}
-          <OutfitPiece item={top} image={getImage(top.id)} variant="top" compact={compact} onBroken={markBroken} />
+          <OutfitPiece item={top} image={getImage(top.id)} variant="top" compact={compact} loading={loading} onBroken={markBroken} />
         </div>
       )}
 
       {bottom && (
         <div className="piece bottom-piece">
           {showLabels && <div className="piece-label bottom-label"><b>PANTS</b><span>{bottom.name}</span></div>}
-          <OutfitPiece item={bottom} image={getImage(bottom.id)} variant="bottom" compact={compact} onBroken={markBroken} />
+          <OutfitPiece item={bottom} image={getImage(bottom.id)} variant="bottom" compact={compact} loading={loading} onBroken={markBroken} />
         </div>
       )}
 
       {shoes && (
         <div className="piece shoe-piece">
           {showLabels && <div className="piece-label shoe-label"><b>SHOES</b><span>{shoes.name}</span></div>}
-          <OutfitPiece item={shoes} image={getImage(shoes.id)} variant="shoes" compact={compact} onBroken={markBroken} />
+          <OutfitPiece item={shoes} image={getImage(shoes.id)} variant="shoes" compact={compact} loading={loading} onBroken={markBroken} />
         </div>
       )}
 
       {accessories.map((item, index) => (
         <div className={`accessory accessory-${index + 1}`} key={item.id}>
-          <OutfitPiece item={item} image={getImage(item.id)} variant="accessory" compact={compact} onBroken={markBroken} />
+          <OutfitPiece item={item} image={getImage(item.id)} variant="accessory" compact={compact} loading={loading} onBroken={markBroken} />
           {showLabels && !compact && <span>{item.name}</span>}
         </div>
       ))}

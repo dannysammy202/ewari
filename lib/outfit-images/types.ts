@@ -27,4 +27,6 @@ export type OpenverseResult = {
   tags?: Array<{ name?: string | null }>;
   width?: number | null;
   height?: number | null;
+  category?: string | null;
+  watermarked?: boolean | null;
 };
