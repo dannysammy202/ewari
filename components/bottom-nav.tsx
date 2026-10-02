@@ -6,7 +6,7 @@ import { Icon } from "@/components/icon";
 
 const items = [
   { href: "/home", label: "Home", icon: "home-2" },
-  { href: "/explore", label: "Explore", icon: "discover-1" },
+  { href: "/wardrobe", label: "Wardrobe", icon: "bag-2" },
   { href: "/style-me", label: "Style Me", icon: "magic-star", featured: true },
   { href: "/saved", label: "Saved", icon: "bookmark" },
   { href: "/profile", label: "Profile", icon: "profile-circle" }

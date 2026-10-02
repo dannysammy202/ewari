@@ -75,7 +75,7 @@ export default function OnboardingPage() {
       return;
     }
     saveProfile(profile);
-    router.push("/home");
+    router.push("/wardrobe?setup=1");
   }
 
   const ready = selected.length > 0;
@@ -112,7 +112,7 @@ export default function OnboardingPage() {
 
       <div className="onboarding-footer">
         <button className="primary-button" onClick={next} disabled={!ready}>
-          {step === steps.length - 1 ? "See my looks" : "Continue"}
+          {step === steps.length - 1 ? "Add my clothes" : "Continue"}
         </button>
       </div>
 
