@@ -17,7 +17,7 @@ export function WardrobeGapList({
             <strong>{item.name}</strong>
             <p>{item.reason}</p>
           </div>
-          <span>{item.worksWith} pieces</span>
+          <span>{item.worksWith ? `${item.worksWith} pieces` : "Starter piece"}</span>
         </article>
       ))}
 

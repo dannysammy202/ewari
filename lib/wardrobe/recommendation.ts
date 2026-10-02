@@ -170,6 +170,17 @@ export function recommendWardrobeGaps(
     .map((candidate) => {
       let score = 0;
       const count = categoryCounts[candidate.category] || 0;
+      const essentialWeight: Partial<Record<WardrobeItem["category"], number>> = {
+        shoes: 4,
+        top: 3,
+        bottom: 3,
+        dress: 3,
+        outerwear: 1,
+        bag: 0,
+        accessory: 0,
+      };
+
+      score += essentialWeight[candidate.category] || 0;
 
       if (count === 0) score += 10;
       else if (count === 1) score += 5;
@@ -208,6 +219,13 @@ export function recommendWardrobeGaps(
       };
     })
     .sort((a, b) => b.score - a.score)
-    .slice(0, limit)
+    .reduce<Array<{ candidate: GapTemplate; score: number; recommendation: WardrobeGapRecommendation }>>((selected, entry) => {
+      if (selected.length >= limit) return selected;
+
+      const usedCategories = new Set(selected.map((item) => item.candidate.category));
+      if (!usedCategories.has(entry.candidate.category)) selected.push(entry);
+
+      return selected;
+    }, [])
     .map(({ recommendation }) => recommendation);
 }
