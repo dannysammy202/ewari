@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { BottomNav } from "@/components/bottom-nav";
-import { OutfitBoard } from "@/components/outfit-board";
+import { OutfitPhoto } from "@/components/outfit-photo";
 import { Icon } from "@/components/icon";
 import { formatNaira } from "@/lib/currency";
 import { getSavedLooks, removeSavedLook } from "@/lib/store";
@@ -33,7 +33,7 @@ export default function SavedPage() {
           {looks.map((look) => (
             <article key={look.sourceId} className="saved-card">
               <Link href={`/outfit/${look.sourceId}`} className="saved-visual">
-                <OutfitBoard items={look.items} compact showLabels={false} />
+                <OutfitPhoto outfitId={look.sourceId} title={look.title} />
               </Link>
               <div className="saved-copy">
                 <div>

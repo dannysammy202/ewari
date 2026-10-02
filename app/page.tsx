@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { OutfitBoard } from "@/components/outfit-board";
+import { OutfitPhoto } from "@/components/outfit-photo";
 import { OUTFITS } from "@/lib/data";
 
 export default function LandingPage() {
@@ -22,13 +22,15 @@ export default function LandingPage() {
         </div>
         <p className="footnote">No shopping cart. No marketplace. Find the look, then source the pieces your way.</p>
       </section>
+
       <section className="landing-visual" aria-label="EWARI outfit preview">
         <div className="visual-tag">{preview.title}</div>
-        <OutfitBoard items={preview.items} showLabels />
+        <OutfitPhoto outfitId={preview.id} title={preview.title} priority showCredit />
         <div className="visual-meta">
           {preview.style.slice(0, 3).map((style) => <span key={style}>{style}</span>)}
         </div>
       </section>
+
       <style jsx>{`
         .landing {
           width: min(1180px, 100%);

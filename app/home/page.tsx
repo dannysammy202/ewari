@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import { BottomNav } from "@/components/bottom-nav";
 import { Icon } from "@/components/icon";
-import { OutfitBoard } from "@/components/outfit-board";
+import { OutfitPhoto } from "@/components/outfit-photo";
 import { OutfitCard } from "@/components/outfit-card";
 import { OCCASIONS } from "@/lib/data";
 import { formatNaira } from "@/lib/currency";
@@ -41,7 +41,7 @@ export default function HomePage() {
           <p className="hero-budget">{formatNaira(featured.budgetMin)}–{formatNaira(featured.budgetMax)}</p>
           <Link href={`/outfit/${featured.id}`} className="secondary-button">View look</Link>
         </div>
-        <div className="hero-visual"><OutfitBoard items={featured.items} compact showLabels={false} /></div>
+        <div className="hero-visual"><OutfitPhoto outfitId={featured.id} title={featured.title} priority /></div>
       </section>
 
       <section className="section">

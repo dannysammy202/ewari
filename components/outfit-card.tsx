@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import type { Outfit } from "@/lib/types";
-import { OutfitBoard } from "@/components/outfit-board";
+import { OutfitPhoto } from "@/components/outfit-photo";
 import { Icon } from "@/components/icon";
 import { formatNaira } from "@/lib/currency";
 import { isSaved, removeSavedLook, saveLook } from "@/lib/store";
@@ -32,7 +32,7 @@ export function OutfitCard({ outfit }: { outfit: Outfit }) {
     <article className="outfit-card">
       <div className="visual">
         <Link href={`/outfit/${outfit.id}`} aria-label={`Open ${outfit.title}`}>
-          <OutfitBoard items={outfit.items} compact showLabels={false} />
+          <OutfitPhoto outfitId={outfit.id} title={outfit.title} />
         </Link>
         <button className={`save ${saved ? "saved" : ""}`} onClick={toggleSave} aria-label="Save look">
           <Icon name={saved ? "bookmark-2" : "bookmark"} active={saved} size={19} />
@@ -47,7 +47,7 @@ export function OutfitCard({ outfit }: { outfit: Outfit }) {
         .outfit-card { min-width: 0; }
         .visual {
           position: relative;
-          height: 330px;
+          aspect-ratio: 4 / 5;
           overflow: hidden;
           border-radius: 20px;
           background: #ede5da;
@@ -64,7 +64,7 @@ export function OutfitCard({ outfit }: { outfit: Outfit }) {
           place-items: center;
           border: 0;
           border-radius: 50%;
-          background: rgba(255,253,249,.9);
+          background: rgba(255,253,249,.92);
           color: #171412;
           backdrop-filter: blur(8px);
           z-index: 4;
@@ -81,9 +81,6 @@ export function OutfitCard({ outfit }: { outfit: Outfit }) {
         }
         h3 { margin: 0; font-size: 16px; letter-spacing: -.025em; }
         .price { margin: 5px 0 0; color: #766d67; font-size: 12px; }
-        @media (min-width: 720px) {
-          .visual { height: 380px; }
-        }
       `}</style>
     </article>
   );
