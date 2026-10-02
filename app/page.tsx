@@ -22,7 +22,7 @@ export default function LandingPage() {
 
         <div className="actions">
           <Link href="/onboarding" className="primary-button">Set up my style</Link>
-          <Link href="/home" className="ghost-button">Preview EWARI</Link>
+          <Link href="/home" className="ghost-button">Open EWARI</Link>
         </div>
 
         <p className="footnote">
