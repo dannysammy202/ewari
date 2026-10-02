@@ -4,6 +4,7 @@ import { useMemo } from "react";
 import { OutfitCredits } from "@/components/outfit-credits";
 import { OutfitPiece } from "@/components/outfit-piece";
 import { useOutfitImages } from "@/hooks/use-outfit-images";
+import type { OutfitImage } from "@/lib/outfit-images/types";
 import type { OutfitItem } from "@/lib/types";
 
 type OutfitBoardProps = {
@@ -30,7 +31,9 @@ export function OutfitBoard({ items, compact = false, showLabels = true }: Outfi
   );
 
   const { getImage, markBroken } = useOutfitImages(visibleItems);
-  const credits = visibleItems.map((item) => getImage(item.id)).filter(Boolean);
+  const credits = visibleItems
+    .map((item) => getImage(item.id))
+    .filter((image): image is OutfitImage => Boolean(image));
 
   return (
     <div className={`outfit-board ${compact ? "compact" : ""}`}>
