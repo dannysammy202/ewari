@@ -19,6 +19,13 @@ export const metadata: Metadata = {
   title: "EWARI — Style that feels like you",
   description: "Personal styling inspiration for your taste, plans and mood.",
   applicationName: "EWARI",
+  icons: {
+    icon: [
+      { url: "/favicon.svg", type: "image/svg+xml" },
+      { url: "/icon.svg", type: "image/svg+xml" },
+    ],
+    shortcut: "/favicon.svg",
+  },
 };
 
 export const viewport: Viewport = {
