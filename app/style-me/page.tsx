@@ -4,7 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 import { BottomNav } from "@/components/bottom-nav";
 import { OutfitCard } from "@/components/outfit-card";
 import { OCCASIONS } from "@/lib/data";
-import { fallbackStyleIntent, rankOutfitsForIntent } from "@/lib/style-me";
+import { fallbackStyleIntent } from "@/lib/recommendation/fallback-style-intent";\nimport { rankOutfitsForIntent } from "@/lib/recommendation/outfit-ranking";
 import { getProfile } from "@/lib/store";
 import type { StyleIntent, StyleProfile } from "@/lib/types";
 
