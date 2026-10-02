@@ -34,9 +34,9 @@ export async function POST(request: Request) {
 
 export async function GET() {
   const sample: OutfitImageSearchItem[] = [
-    { id: "sample-top", name: "Cream knitted polo", category: "top", colour: "Cream" },
-    { id: "sample-bottom", name: "Brown relaxed trousers", category: "bottom", colour: "Brown" },
-    { id: "sample-shoes", name: "White low-top trainers", category: "shoes", colour: "White" },
+    { id: "cream-knit-polo", name: "Cream knitted polo", category: "top", colour: "Cream" },
+    { id: "brown-relaxed-trouser", name: "Brown relaxed trousers", category: "bottom", colour: "Brown" },
+    { id: "white-low-trainer", name: "White low-top trainers", category: "shoes", colour: "White" },
   ];
 
   const images = await findOutfitImages(sample);
