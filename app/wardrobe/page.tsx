@@ -1,8 +1,12 @@
 "use client";
 
+import Link from "next/link";
 import { ChangeEvent, useEffect, useRef, useState } from "react";
+import { AppHeader } from "@/components/app-header";
 import { BottomNav } from "@/components/bottom-nav";
+import { PageSkeleton } from "@/components/page-skeleton";
 import { WardrobeItemCard } from "@/components/wardrobe-item-card";
+import { useHydrated } from "@/hooks/use-hydrated";
 import { STYLE_OPTIONS } from "@/lib/data";
 import { WARDROBE_CATEGORIES } from "@/lib/ai/wardrobe-analysis-schema";
 import { prepareWardrobeImage } from "@/lib/wardrobe/image";
@@ -29,8 +33,10 @@ const emptyAnalysis: WardrobeAnalysis = {
 };
 
 export default function WardrobePage() {
+  const hydrated = useHydrated();
   const inputRef = useRef<HTMLInputElement>(null);
   const [items, setItems] = useState<WardrobeItem[]>([]);
+  const [setupMode, setSetupMode] = useState(false);
   const [imageDataUrl, setImageDataUrl] = useState("");
   const [analysis, setAnalysis] = useState<WardrobeAnalysis | null>(null);
   const [analysing, setAnalysing] = useState(false);
@@ -38,8 +44,10 @@ export default function WardrobePage() {
   const [message, setMessage] = useState("");
 
   useEffect(() => {
+    if (!hydrated) return;
     setItems(getWardrobeItems());
-  }, []);
+    setSetupMode(new URLSearchParams(window.location.search).get("setup") === "1");
+  }, [hydrated]);
 
   async function handleUpload(event: ChangeEvent<HTMLInputElement>) {
     const file = event.target.files?.[0];
@@ -69,7 +77,7 @@ export default function WardrobePage() {
       setAnalysis(data.analysis || emptyAnalysis);
     } catch {
       setAnalysis(emptyAnalysis);
-      setMessage("EWARI could not identify this item automatically. Review the details below and save it manually.");
+      setMessage("EWARI could not identify this item automatically. Check the details below before saving.");
     } finally {
       setAnalysing(false);
     }
@@ -116,164 +124,257 @@ export default function WardrobePage() {
       setImageDataUrl("");
       setMessage("Added to your wardrobe.");
     } catch {
-      setMessage("Your local wardrobe storage is full. Remove an older item before adding another.");
+      setMessage("Your device storage is full. Remove an older item, then try again.");
     } finally {
       setSaving(false);
     }
   }
 
+  function cancelReview() {
+    setAnalysis(null);
+    setImageDataUrl("");
+    setMessage("");
+  }
+
   function removeItem(itemId: string) {
+    const item = items.find((entry) => entry.id === itemId);
+    if (!item) return;
+
+    if (!window.confirm(`Remove ${item.name} from your wardrobe?`)) return;
+
     removeWardrobeItem(itemId);
     setItems(getWardrobeItems());
   }
 
+  const action = hydrated && items.length > 0 ? (
+    <button className="header-add" onClick={() => inputRef.current?.click()}>
+      Add item
+    </button>
+  ) : undefined;
+
   return (
     <main className="app-page">
-      <header className="topbar">
-        <div>
-          <p className="eyebrow">Clothes you already own</p>
-          <h1 className="display">Wardrobe</h1>
-        </div>
-        <button className="add-button" onClick={() => inputRef.current?.click()}>Add item</button>
-      </header>
+      <AppHeader
+        eyebrow="Clothes you already own"
+        title="Wardrobe"
+        backHref={setupMode ? "/onboarding" : undefined}
+        action={action}
+      />
 
       <input
         ref={inputRef}
         className="hidden-input"
         type="file"
         accept="image/*"
-        capture="environment"
         onChange={handleUpload}
       />
 
-      <section className="intro-card">
-        <div>
-          <p className="eyebrow">Make EWARI personal</p>
-          <h2>Upload what you own.</h2>
-          <p>EWARI uses these exact clothes when it builds looks for you. Clear product-style photos work best.</p>
-        </div>
-        <button className="primary-button" onClick={() => inputRef.current?.click()}>
-          {items.length ? "Add another item" : "Add my first item"}
-        </button>
-      </section>
-
-      {message && <p className="message">{message}</p>}
-
-      {(analysing || analysis) && (
-        <section className="review card">
-          <div className="preview">
-            {imageDataUrl && <img src={imageDataUrl} alt="Wardrobe upload preview" />}
-            {analysing && <div className="analyse-state">EWARI is identifying this item…</div>}
-          </div>
-
-          {analysis && !analysing && (
-            <div className="review-form">
-              <div className="review-head">
-                <div>
-                  <p className="eyebrow">Check before saving</p>
-                  <h3>Does this look right?</h3>
-                </div>
-                {analysis.confidence > 0 && <span>{Math.round(analysis.confidence * 100)}% match</span>}
-              </div>
-
-              <label>
-                Item name
-                <input className="field" value={analysis.name} onChange={(event) => update("name", event.target.value)} />
-              </label>
-
-              <div className="two-fields">
-                <label>
-                  Category
-                  <select className="field" value={analysis.category} onChange={(event) => update("category", event.target.value as WardrobeCategory)}>
-                    {WARDROBE_CATEGORIES.map((value) => <option key={value} value={value}>{value}</option>)}
-                  </select>
-                </label>
-                <label>
-                  Colour
-                  <input className="field" value={analysis.colour} onChange={(event) => update("colour", event.target.value)} />
-                </label>
-              </div>
-
-              <div className="two-fields">
-                <label>
-                  Fit
-                  <select className="field" value={analysis.fit} onChange={(event) => update("fit", event.target.value)}>
-                    {["Unknown", "Fitted", "Regular", "Relaxed", "Oversized", "Loose"].map((value) => <option key={value}>{value}</option>)}
-                  </select>
-                </label>
-                <label>
-                  Material
-                  <input className="field" value={analysis.material} onChange={(event) => update("material", event.target.value)} />
-                </label>
-              </div>
-
+      {!hydrated ? (
+        <PageSkeleton rows={4} />
+      ) : (
+        <>
+          {setupMode && (
+            <section className="setup-banner">
               <div>
-                <p className="field-label">Style tags</p>
-                <div className="chip-row">
-                  {STYLE_OPTIONS.map((style) => (
-                    <button
-                      key={style}
-                      className={`chip ${analysis.styles.includes(style) ? "active" : ""}`}
-                      onClick={() => toggleStyle(style)}
-                      type="button"
-                    >
-                      {style}
-                    </button>
-                  ))}
-                </div>
+                <p className="eyebrow">Last setup step</p>
+                <h2>Add a few everyday pieces.</h2>
+                <p>Start with a top, a bottom and shoes. Three to five items is enough for your first outfit suggestions.</p>
               </div>
+              <div className="setup-actions">
+                <Link href="/home" className="ghost-button">Skip for now</Link>
+                <Link href="/home" className="primary-button">Continue to home</Link>
+              </div>
+            </section>
+          )}
 
-              <div className="review-actions">
-                <button className="ghost-button" onClick={() => { setAnalysis(null); setImageDataUrl(""); }}>Cancel</button>
-                <button className="primary-button" onClick={saveItem} disabled={saving}>{saving ? "Saving…" : "Save to wardrobe"}</button>
+          {!items.length && !analysis && !analysing && (
+            <section className="intro-card">
+              <div>
+                <p className="eyebrow">Make EWARI personal</p>
+                <h2>Upload what you own.</h2>
+                <p>Use a clear photo of one main clothing item. EWARI identifies it, then you check the details before saving.</p>
               </div>
+              <button className="primary-button" onClick={() => inputRef.current?.click()}>
+                Add my first item
+              </button>
+            </section>
+          )}
+
+          {items.length > 0 && !analysis && !analysing && (
+            <div className="collection-note">
+              <span>{items.length} {items.length === 1 ? "item" : "items"} saved on this device</span>
+              <button onClick={() => inputRef.current?.click()}>Add another</button>
             </div>
           )}
-        </section>
+
+          {message && <p className="message" role="status" aria-live="polite">{message}</p>}
+
+          {(analysing || analysis) && (
+            <section className="review card" aria-busy={analysing}>
+              <div className="preview">
+                {imageDataUrl && <img src={imageDataUrl} alt="Wardrobe upload preview" />}
+                {analysing && <div className="analyse-state">EWARI is identifying this item…</div>}
+              </div>
+
+              {analysis && !analysing && (
+                <div className="review-form">
+                  <div className="review-head">
+                    <div>
+                      <p className="eyebrow">Check before saving</p>
+                      <h3>Does this look right?</h3>
+                    </div>
+                    {analysis.confidence > 0 && <span>{Math.round(analysis.confidence * 100)}% match</span>}
+                  </div>
+
+                  <label>
+                    Item name
+                    <input className="field" value={analysis.name} onChange={(event) => update("name", event.target.value)} />
+                  </label>
+
+                  <div className="two-fields">
+                    <label>
+                      Category
+                      <select className="field" value={analysis.category} onChange={(event) => update("category", event.target.value as WardrobeCategory)}>
+                        {WARDROBE_CATEGORIES.map((value) => <option key={value} value={value}>{value}</option>)}
+                      </select>
+                    </label>
+                    <label>
+                      Colour
+                      <input className="field" value={analysis.colour} onChange={(event) => update("colour", event.target.value)} />
+                    </label>
+                  </div>
+
+                  <div className="two-fields">
+                    <label>
+                      Fit
+                      <select className="field" value={analysis.fit} onChange={(event) => update("fit", event.target.value)}>
+                        {["Unknown", "Fitted", "Regular", "Relaxed", "Oversized", "Loose"].map((value) => <option key={value}>{value}</option>)}
+                      </select>
+                    </label>
+                    <label>
+                      Material
+                      <input className="field" value={analysis.material} onChange={(event) => update("material", event.target.value)} />
+                    </label>
+                  </div>
+
+                  <div className="style-field">
+                    <p className="field-label">Style tags</p>
+                    <div className="chip-row">
+                      {STYLE_OPTIONS.map((style) => (
+                        <button
+                          key={style}
+                          className={`chip ${analysis.styles.includes(style) ? "active" : ""}`}
+                          onClick={() => toggleStyle(style)}
+                          type="button"
+                        >
+                          {style}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div className="review-actions">
+                    <button className="ghost-button" onClick={cancelReview}>Cancel</button>
+                    <button className="primary-button" onClick={saveItem} disabled={saving}>
+                      {saving ? "Saving…" : "Save item"}
+                    </button>
+                  </div>
+                </div>
+              )}
+            </section>
+          )}
+
+          <section className="section">
+            <div className="section-head">
+              <div>
+                <p className="eyebrow">Your collection</p>
+                <h3>{items.length} {items.length === 1 ? "item" : "items"}</h3>
+              </div>
+            </div>
+
+            {items.length ? (
+              <div className="wardrobe-grid">
+                {items.map((item) => (
+                  <WardrobeItemCard key={item.id} item={item} onRemove={removeItem} />
+                ))}
+              </div>
+            ) : (
+              <div className="empty-state">
+                Add a top, a bottom and shoes to give EWARI enough pieces for your first complete look.
+              </div>
+            )}
+          </section>
+        </>
       )}
-
-      <section className="section">
-        <div className="section-head">
-          <div>
-            <p className="eyebrow">Your collection</p>
-            <h3>{items.length} {items.length === 1 ? "item" : "items"}</h3>
-          </div>
-        </div>
-
-        {items.length ? (
-          <div className="wardrobe-grid">
-            {items.map((item) => <WardrobeItemCard key={item.id} item={item} onRemove={removeItem} />)}
-          </div>
-        ) : (
-          <div className="empty-state">
-            Your wardrobe is empty. Add a few tops, bottoms and shoes so EWARI has enough pieces to start styling.
-          </div>
-        )}
-      </section>
 
       <BottomNav />
 
       <style jsx>{`
-        .add-button {
+        .header-add {
           min-height: 42px;
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
           border: 0;
           border-radius: 999px;
-          padding: 0 15px;
+          padding: 0 14px;
           background: #2a211d;
           color: #c7f24a;
+          font-size: 11px;
           font-weight: 800;
+          white-space: nowrap;
         }
         .hidden-input { display: none; }
+        .setup-banner,
         .intro-card {
           display: grid;
           gap: 20px;
           padding: 22px;
-          border-radius: 24px;
+          border-radius: 22px;
           background: #dfe7c5;
         }
-        .intro-card h2 { margin: 0; font-size: 25px; letter-spacing: -.03em; }
-        .intro-card p:last-child { margin: 8px 0 0; max-width: 580px; color: #5d6250; line-height: 1.5; font-size: 13px; }
-        .intro-card button { width: 100%; }
+        .setup-banner h2,
+        .intro-card h2 {
+          margin: 0;
+          font-size: 24px;
+          line-height: 1.1;
+          letter-spacing: -.03em;
+        }
+        .setup-banner p:last-child,
+        .intro-card p:last-child {
+          margin: 9px 0 0;
+          max-width: 600px;
+          color: #5d6250;
+          line-height: 1.5;
+          font-size: 12px;
+        }
+        .setup-actions {
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          gap: 9px;
+        }
+        .intro-card :global(.primary-button) { width: 100%; }
+        .collection-note {
+          min-height: 50px;
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          gap: 12px;
+          padding: 0 14px;
+          border: 1px solid rgba(42,33,29,.1);
+          border-radius: 15px;
+          background: #fffdf9;
+          color: #766d67;
+          font-size: 11px;
+        }
+        .collection-note button {
+          border: 0;
+          background: transparent;
+          color: #171412;
+          font-weight: 800;
+          text-decoration: underline;
+          text-underline-offset: 3px;
+        }
         .message {
           margin: 14px 0 0;
           padding: 11px 13px;
@@ -281,7 +382,7 @@ export default function WardrobePage() {
           background: #ede5da;
           color: #625a55;
           font-size: 11px;
-          line-height: 1.4;
+          line-height: 1.45;
         }
         .review {
           display: grid;
@@ -290,13 +391,15 @@ export default function WardrobePage() {
         }
         .preview {
           position: relative;
-          min-height: 320px;
+          aspect-ratio: 4 / 3;
+          min-height: 250px;
+          display: grid;
+          place-items: center;
           background: #ede5da;
         }
         .preview img {
           width: 100%;
           height: 100%;
-          max-height: 520px;
           object-fit: contain;
         }
         .analyse-state {
@@ -305,18 +408,24 @@ export default function WardrobePage() {
           display: grid;
           place-items: center;
           padding: 20px;
-          background: rgba(247,243,236,.78);
+          background: rgba(247,243,236,.84);
           font-size: 12px;
-          font-weight: 750;
+          font-weight: 760;
+          text-align: center;
         }
         .review-form { padding: 20px; }
         .review-head {
+          min-height: 54px;
           display: flex;
           justify-content: space-between;
           gap: 12px;
           margin-bottom: 20px;
         }
-        .review-head h3 { margin: 0; font-size: 20px; }
+        .review-head h3 {
+          margin: 0;
+          font-size: 20px;
+          line-height: 1.15;
+        }
         .review-head > span {
           height: max-content;
           padding: 6px 8px;
@@ -324,6 +433,7 @@ export default function WardrobePage() {
           background: #dfe7c5;
           font-size: 9px;
           font-weight: 800;
+          white-space: nowrap;
         }
         label, .field-label {
           display: block;
@@ -332,21 +442,43 @@ export default function WardrobePage() {
           font-weight: 800;
         }
         label + label { margin-top: 14px; }
-        .two-fields { display: grid; gap: 14px; margin-top: 14px; }
+        .two-fields {
+          display: grid;
+          gap: 14px;
+          margin-top: 14px;
+        }
         .two-fields label { margin: 0; }
-        .review-form > div + div:not(.review-head) { margin-top: 18px; }
-        .review-actions { display: grid; grid-template-columns: 1fr 1.3fr; gap: 10px; }
+        .style-field { margin-top: 18px; }
+        .review-actions {
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          gap: 9px;
+          margin-top: 22px;
+        }
         .wardrobe-grid {
           display: grid;
           grid-template-columns: repeat(2, minmax(0,1fr));
           gap: 14px;
         }
         @media (min-width: 720px) {
-          .intro-card { grid-template-columns: 1fr auto; align-items: center; padding: 28px; }
-          .intro-card button { width: auto; }
-          .review { grid-template-columns: .8fr 1.2fr; }
+          .setup-banner,
+          .intro-card {
+            grid-template-columns: 1fr auto;
+            align-items: center;
+            padding: 28px;
+          }
+          .setup-actions { min-width: 300px; }
+          .intro-card :global(.primary-button) { width: auto; }
+          .review { grid-template-columns: .82fr 1.18fr; }
+          .preview { aspect-ratio: auto; min-height: 100%; }
           .two-fields { grid-template-columns: repeat(2, minmax(0,1fr)); }
-          .wardrobe-grid { grid-template-columns: repeat(4, minmax(0,1fr)); gap: 18px; }
+          .wardrobe-grid {
+            grid-template-columns: repeat(4, minmax(0,1fr));
+            gap: 18px;
+          }
+        }
+        @media (max-width: 430px) {
+          .setup-actions { grid-template-columns: 1fr; }
         }
       `}</style>
     </main>
