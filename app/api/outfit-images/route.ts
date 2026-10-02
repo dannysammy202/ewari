@@ -23,11 +23,32 @@ export async function POST(request: Request) {
   const images = await findOutfitImages(items);
 
   return NextResponse.json(
-    { images, provider: "Openverse" },
+    { images },
     {
       headers: {
         "Cache-Control": "public, s-maxage=86400, stale-while-revalidate=604800",
       },
     }
   );
+}
+
+export async function GET() {
+  const sample: OutfitImageSearchItem[] = [
+    { id: "sample-top", name: "Cream knitted polo", category: "top", colour: "Cream" },
+    { id: "sample-bottom", name: "Brown relaxed trousers", category: "bottom", colour: "Brown" },
+    { id: "sample-shoes", name: "White low-top trainers", category: "shoes", colour: "White" },
+  ];
+
+  const images = await findOutfitImages(sample);
+
+  return NextResponse.json({
+    ok: Object.keys(images).length > 0,
+    count: Object.keys(images).length,
+    items: Object.values(images).map((image) => ({
+      itemId: image.itemId,
+      sourceUrl: image.sourceUrl,
+      imageUrl: image.imageUrl,
+      license: image.license,
+    })),
+  });
 }
