@@ -17,7 +17,7 @@ const bodoni = Bodoni_Moda({
 
 export const metadata: Metadata = {
   title: "EWARI — Style that feels like you",
-  description: "Personal styling inspiration for your taste, plans and mood.",
+  description: "A personal wardrobe stylist that builds outfits from clothes you already own.",
   applicationName: "EWARI",
   icons: {
     icon: [
